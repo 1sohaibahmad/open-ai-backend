@@ -12,6 +12,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/generated", express.static(path.resolve(__dirname, "../generated")));
 
+app.get("/", (_, res) => res.json({ status: "ok", service: "ai-image-studio-backend" }));
+
 app.post("/generate", async (req, res) => {
   const { prompt } = req.body;
 
