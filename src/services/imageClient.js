@@ -12,27 +12,22 @@ if (!fs.existsSync(IMAGES_DIR)) {
 }
 
 export async function generateImage(prompt) {
-  console.log(`[ImageGen] Generating via Hugging Face for prompt: "${prompt.slice(0, 60)}..."`);
+  console.log(`[ImageGen] Generating via Pollinations for prompt: "${prompt.slice(0, 60)}..."`);
 
   const resp = await fetch(
-    "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
-    {
-      headers: {
-        Authorization: `Bearer ${config.hfToken}`,
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ inputs: prompt }),
-    }
+    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true`,
+    { method: "GET" }
   );
 
   if (!resp.ok) {
     const text = await resp.text();
-    throw new Error(`HF ${resp.status}: ${text.slice(0, 200)}`);
+    throw new Error(`Pollinations ${resp.status}: ${text.slice(0, 200)}`);
   }
 
   const buffer = Buffer.from(await resp.arrayBuffer());
-  const filename = `${crypto.randomUUID()}.webp`;
+  const contentType = resp.headers.get("content-type") || "image/jpeg";
+  const ext = contentType.includes("png") ? "png" : "jpg";
+  const filename = `${crypto.randomUUID()}.${ext}`;
   const filepath = path.join(IMAGES_DIR, filename);
   fs.writeFileSync(filepath, buffer);
 

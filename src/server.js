@@ -66,7 +66,7 @@ app.get("/generate/stream", (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = config.port;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🎨 AI Image Studio backend running on port ${PORT}`);
